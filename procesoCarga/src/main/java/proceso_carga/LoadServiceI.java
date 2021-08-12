@@ -21,8 +21,8 @@ public interface LoadServiceI {
 	 * @return prop Devuelve un objeto del tipo Properties que permite extraer los parametros del archivo .properties
 	 */
 	public Properties loadPropertiesFile(String filePath, ConnectionDB con);
-	
-	
+
+
 
 	/**
 	 * Método que devuelve la ruta al directorio que se desea monitorizar
@@ -45,4 +45,6 @@ public interface LoadServiceI {
 	 */
 	public void readCSV(Session session, ConnectionDB con);
 
+
+	public org.apache.logging.log4j.Logger getLogger();
 }

@@ -7,10 +7,10 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 public class ConnectionDB implements ConnectionDBI {
-	
+
 
 	private ArrayList<String> mensajesPend = new ArrayList<>();
-	
+
 	/**
 	 * Método que se encarga de introducir los datos a la base de datos
 	 * 
@@ -171,22 +171,17 @@ public class ConnectionDB implements ConnectionDBI {
 	}
 
 
-	
+
 	public ArrayList<String> getMensajesPend() {
 		return mensajesPend;
 	}
 
-	
-	public void setMensajesPend(String mes) {
-		mensajesPend.add(mes);
-	}
-	
 	public void cleanMensajesPend() {
 		mensajesPend.clear();
 	}
 
-	public void addMensajesPend(String mes) {
+	public synchronized void addMensajesPend(String mes) {
 		mensajesPend.add(mes);
 	}
-	
+
 }

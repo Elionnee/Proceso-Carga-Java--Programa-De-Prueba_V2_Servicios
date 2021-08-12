@@ -15,10 +15,10 @@ public interface ConnectionDBI {
 	 */
 	public void connectToDBIntroduceData(Session session, String semana, ProductoEntity prod);
 
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Se crea una query para crear la tabla con el nombre indicado, utilizando la conexión ya establecida con la base de datos
 	 * Se ejecuta la query
@@ -36,18 +36,15 @@ public interface ConnectionDBI {
 
 
 	public void connectToDBCreateTableLogs(Session session);
-	
-	
-	
+
+
+
 	public void connectToDBIntroduceLogs(Session session, String semana, ProductoEntity prod, String info);
 
-	
+
 	public ArrayList<String> getMensajesPend();
-	
-	
-	public void setMensajesPend(String mes);
-	
+
 	public void cleanMensajesPend();
-	
+
 	public void addMensajesPend(String mes);
 }

@@ -1,6 +1,7 @@
 package proceso_carga;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -33,191 +34,161 @@ interface StringFunction {
 public class LoadService implements LoadServiceI{
 
 	// Directorio que se desea monitorizar
-		private String filePath;
+	private String filePath;
 
-		// Archivos leidos
-		private ArrayList<File> filesRead= new ArrayList<>();
-		// Archivos pendientes de leer
-		private Queue<File> filesOnQueue = new LinkedList<>();
+	// Archivos pendientes de leer
+	private Queue<File> filesOnQueue = new LinkedList<>();
 
-		// Estado actual del thread, cambia si es interrumpido
-		private Boolean threadState = true;
+	// Estado actual del thread, cambia si es interrumpido
+	private Boolean threadState = true;
 
-		// Objeto logger que registra el estado del programa por consola
-		private org.apache.logging.log4j.Logger logger = null;
-		// Objeto properties que nos permite acceder a los contenidos del archivo pc.properties correspondiente
-		private Properties prop = null;
+	// Objeto logger que registra el estado del programa por consola
+	private org.apache.logging.log4j.Logger logger = null;
+	// Objeto properties que nos permite acceder a los contenidos del archivo pc.properties correspondiente
+	private Properties prop = null;
 
 
 
 
 
-		// Lambda que permite dar un formato específico a la string que se le pasa como parámetro de entrada
-		StringFunction deleteSymbols = new StringFunction() {
-			@Override
-			public String run(String n) {
+	// Lambda que permite dar un formato específico a la string que se le pasa como parámetro de entrada
+	StringFunction deleteSymbols = new StringFunction() {
+		@Override
+		public String run(String n) {
 
-				String result = ""; 
-				result = n.replaceAll("[^a-zA-Z0-9.]", "");  
+			String result = ""; 
+			result = n.replaceAll("[^a-zA-Z0-9.]", "");  
 
-				return result;
-
-			}
-		};
-
-
-
-		/**
-		 * Constructor de la clase que se encarga de buscar el archivo .properties y de leer que archivos 
-		 * csv hay en el directorio que este archivo especifica
-		 * 
-		 */
-		public LoadService(ConnectionDB con) {
-
-			con.cleanMensajesPend();
-			
-			// Genera la conexión con el archivo .properties indicado
-			prop = this.loadPropertiesFile("pc.properties", con);
-
-			// Crea el logger y lo configura a partir de las indicaciones del fichero log4j2.xml correspondiente
-			logger = LogManager.getLogger(this.getClass());
-			PropertyConfigurator.configure(getClass().getResource("log4j2.xml"));
-
-			// Comprueba si el logger creado funciona correctamente
-			try {
-				logger.debug("Logger funciona");
-			} catch(Exception e) {
-				logger.error("Error con el log", e);
-				e.printStackTrace();
-			}
-
-			// Limpia las colas de archivos leidos y pendientes de leer
-			filesRead.clear();
-			filesOnQueue.clear();
-
-			// Setea el directorio indicado en el properties como directorio a observar
-			setFilePath(this.prop, con);
+			return result;
 
 		}
+	};
+
+
+	public org.apache.logging.log4j.Logger getLogger() {
+		return logger;
+	}
+
+
+
+	/**
+	 * Constructor de la clase que se encarga de buscar el archivo .properties y de leer que archivos 
+	 * csv hay en el directorio que este archivo especifica
+	 * 
+	 */
+	public LoadService(ConnectionDB con) {
+
+		con.cleanMensajesPend();
+		// Genera la conexión con el archivo .properties indicado
+		prop = this.loadPropertiesFile("pc.properties", con);
+
+		// Crea el logger y lo configura a partir de las indicaciones del fichero log4j2.xml correspondiente
+		logger = LogManager.getLogger(this.getClass());
+		PropertyConfigurator.configure(getClass().getResource("log4j2.xml"));
+
+		// Comprueba si el logger creado funciona correctamente
+		try {
+			logger.debug("Logger funciona");
+		} catch(Exception e) {
+			logger.error("Error con el log", e);
+			e.printStackTrace();
+		}
+
+		// Limpia la cola de archivos pendientes de leer
+		filesOnQueue.clear();
+
+		// Setea el directorio indicado en el properties como directorio a observar
+		setFilePath(this.prop, con);
+
+	}
 
 
 
 
 
+	/**
+	 * Por cada thread disponible, comenzar a ejecutar la funciópn run() :
+	 * 		Adquirir un semaforo
+	 * 		Obtener archivo de la cola de pendientes
+	 * 		Avisar en caso de que haya una interrupción inesperada y detener el thread
+	 * 
+	 */
 
+	/**
+	 * Método que crea los threads y su función de ejecución para leer los archivos CSV
+	 * 
+	 * @param threadPool Conjunto de threads disponibles
+	 * 
+	 */
+	private Boolean threadReadCSVExecution(final Session session, ExecutorService threadPool, ConnectionDB con) {
 
+		threadPool.execute(new Runnable() {
 
+			public void run() {
 
-
-		/**
-		 * Por cada thread disponible, comenzar a ejecutar la funciópn run() :
-		 * 		Adquirir un semaforo
-		 * 		Obtener archivo de la cola de pendientes
-		 * 		Avisar en caso de que haya una interrupción inesperada y detener el thread
-		 * 
-		 */
-
-		/**
-		 * Método que crea los threads y su función de ejecución para leer los archivos CSV
-		 * 
-		 * @param threadPool Conjunto de threads disponibles
-		 * 
-		 */
-		private Boolean threadReadCSVExecution(final Session session, ExecutorService threadPool, ConnectionDB con) {
-
-			threadPool.execute(new Runnable() {
-
-				public void run() {
-
-					try {
-						threadGetFileFromQueue();
-					} catch (Exception e) {
-						notifyThreadInt();
-					}
-
+				try {
+					threadGetFileFromQueue();
+				} catch (Exception e) {
+					notifyThreadInt();
 				}
 
-				private void threadGetFileFromQueue() {
+			}
 
-					File file;
+			private void threadGetFileFromQueue() {
 
-					file = getFileFromFileQueue();
+				File file;
 
-					if(file != null) {
+				file = getFileFromFileQueue();
 
-						readFile(session, file, con);
-						filesRead.add(file);
-						setThreadState();
-					} else {
-						notifyThreadInt();
-						Thread.currentThread().interrupt();
-					}
+				if(file != null) {
 
+					readFile(session, file, con);
+					setThreadState();
+				} else {
+					notifyThreadInt();
+					Thread.currentThread().interrupt();
 				}
 
-			});
-
-			if(Boolean.FALSE.equals(threadState)) {
-				setThreadState();
-				return false;
-			} else {
-				return true;
 			}
 
+		});
+
+		if(Boolean.FALSE.equals(threadState)) {
+			setThreadState();
+			return false;
+		} else {
+			return true;
 		}
 
-
-
-		
-
+	}
 
 
 
-		private synchronized void notifyThreadInt() {
-			threadState = false;
+	private synchronized void notifyThreadInt() {
+		threadState = false;
+	}
+
+
+
+	private synchronized void setThreadState() {
+		threadState = true;
+	}
+
+
+
+	/**
+	 * Método que extrae y devuelve el primer archivo de la cola de archivos pendientes por leer
+	 * 
+	 * @return filesOnQueue.poll() Primer archivo pendiente por leer
+	 */
+	private synchronized File getFileFromFileQueue() {
+		if(!filesOnQueue.isEmpty()) {
+			return filesOnQueue.poll();
 		}
+		return null;
+	}
 
 
-
-
-
-
-
-
-
-
-
-
-		private synchronized void setThreadState() {
-			threadState = true;
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-		/**
-		 * Método que extrae y devuelve el primer archivo de la cola de archivos pendientes por leer
-		 * 
-		 * @return filesOnQueue.poll() Primer archivo pendiente por leer
-		 */
-		private synchronized File getFileFromFileQueue() {
-			if(!filesOnQueue.isEmpty()) {
-				return filesOnQueue.poll();
-			}
-			return null;
-		}
-		
-		
-		
-		
 
 	/**
 	 * Crea un objeto 'properties'
@@ -253,16 +224,6 @@ public class LoadService implements LoadServiceI{
 		return prop;
 
 	}
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -307,16 +268,6 @@ public class LoadService implements LoadServiceI{
 
 
 
-
-
-
-
-
-
-
-
-
-
 	/**
 	 * Buscar el directorio a monitorizar
 	 * Obtener una lista con todos los archivos que contiene en ese momento
@@ -343,8 +294,7 @@ public class LoadService implements LoadServiceI{
 			// Comprueba que los archivos presentes son .CSV y que no habian sido leidos previamente durante esta ejecución
 			for(File fileName : filesPresent) { 
 
-				if(fileName.toString().toLowerCase().endsWith(".csv") && (fileName.isFile()) 
-						&& (!filesRead.contains(fileName))) {
+				if(fileName.toString().toLowerCase().endsWith(".csv") && (fileName.isFile())) {
 
 					filesOnQueue.add(fileName);
 
@@ -359,16 +309,6 @@ public class LoadService implements LoadServiceI{
 		}
 
 	}
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -398,26 +338,18 @@ public class LoadService implements LoadServiceI{
 				File orFile = new File(orFilePath);
 				File cpFile = new File(cpFilePath);
 
-				replaceFile(orFile, cpFile);
+				replaceFile(orFile, cpFile, con);
 				con.addMensajesPend("Archivo trasladado correctramente a la carpeta : " + destDir);
 
 			}
 
 		} catch(Exception ex) { 
-
 			ex.printStackTrace();
+			con.addMensajesPend("MoveFiles no encuentra el archivo");
 
 		}
 
 	}
-
-
-
-
-
-
-
-
 
 
 
@@ -438,7 +370,7 @@ public class LoadService implements LoadServiceI{
 	 * 
 	 * @throws IOException Cuando no consigue reemplazar el archivo o cuando no existe
 	 */
-	private void replaceFile(File orFile, File cpFile) throws IOException {
+	private void replaceFile(File orFile, File cpFile, ConnectionDB con) throws IOException {
 
 		try {
 
@@ -449,6 +381,8 @@ public class LoadService implements LoadServiceI{
 			FileUtils.copyFile(orFile, cpFile);
 			FileUtils.forceDelete(orFile);
 
+		} catch(FileNotFoundException ex) {
+			con.addMensajesPend("Replace File : "+ orFile +" . Archivo movido previamente.");
 		}
 
 	}
@@ -478,7 +412,7 @@ public class LoadService implements LoadServiceI{
 		String semana = file.getName();
 		String[] next = null;
 		ProductoEntity p = null;
-		// Crea un reader para leer el archivo .csv que le pasan como parametro de entrada, saltandose la 1º línea
+
 		try {
 
 			Reader reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
@@ -497,10 +431,8 @@ public class LoadService implements LoadServiceI{
 
 
 			con.connectToDBIntroduceLogs(session, semana, null, "Conectado satisfactoriamente con la base de datos");
-
 			con.connectToDBCreateTable(semana, session);
 			con.connectToDBCreateTable("productoentity", session);
-
 
 			try {
 
@@ -539,8 +471,8 @@ public class LoadService implements LoadServiceI{
 	}
 
 
-	
-	
+
+
 
 
 
@@ -561,14 +493,14 @@ public class LoadService implements LoadServiceI{
 
 		ArrayList<String> tempPend;
 
+		con.connectToDBCreateTableLogs(session);		
+
 		tempPend = con.getMensajesPend();
 		con.cleanMensajesPend();
 		for (String m : tempPend) {
 			con.connectToDBIntroduceLogs(session, "Inicio", null,  m);
 		}
 		tempPend.clear();
-
-		con.connectToDBCreateTableLogs(session);
 
 		con.connectToDBIntroduceLogs(session, "Inicio", null, "Comienzo de transferencia de archivos .CSV a la base de datos.");
 
@@ -594,14 +526,9 @@ public class LoadService implements LoadServiceI{
 		}
 		tempPend.clear();
 
-
 	}
 
 
 
 
-
-
-
-	
 }
