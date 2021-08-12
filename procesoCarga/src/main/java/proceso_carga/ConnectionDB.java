@@ -8,9 +8,35 @@ import org.hibernate.query.Query;
 
 public class ConnectionDB implements ConnectionDBI {
 
-
+	private static ConnectionDB con = null;
+	
 	private ArrayList<String> mensajesPend = new ArrayList<>();
+	
+	private ConnectionDB() {}
+	
+	public static ConnectionDB getSingletonInstance() {
+		if (con == null) {
+			con = new ConnectionDB();
+		} else {
+			System.out.println("No se puede crear el objeto, ya que ya existe una instancia del mismo  en esta clase");
 
+		}
+		return con;
+	}
+
+	
+	@Override
+	public ConnectionDB clone(){
+	    try {
+	        throw new CloneNotSupportedException();
+	    } catch (CloneNotSupportedException ex) {
+	        System.out.println("No se puede clonar un objeto de la clase ConnectionDB");
+	    }
+	    return null; 
+	}
+	
+	
+	
 	/**
 	 * Método que se encarga de introducir los datos a la base de datos
 	 * 

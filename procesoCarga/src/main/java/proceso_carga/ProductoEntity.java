@@ -32,15 +32,11 @@ public class ProductoEntity {
 	@Getter @Setter private String transactionId;
 
 
-
 	/**
 	 *  Constructor vacío de la clase, en caso de que el archivo contenga entradas vacías
 	 * 
 	 */
 	public ProductoEntity () {}
-
-
-
 
 
 	/**

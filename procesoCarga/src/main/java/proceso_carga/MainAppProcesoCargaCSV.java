@@ -10,11 +10,11 @@ public class MainAppProcesoCargaCSV {
 
 	public static void main(String[] args) throws InterruptedException {
 
-		ConnectionDB con =  new ConnectionDB();
-		LoadService loadS = new LoadService(con);
-		Watcher watch = new Watcher(loadS.getFilePath());
+		ConnectionDB con =  ConnectionDB.getSingletonInstance();
+		LoadService loadS = LoadService.getSingletonInstance(con);
+		Watcher watch = Watcher.getSingletonInstance(loadS.getFilePath());
 		Logger log = loadS.getLogger();
-
+		
 		int i = -1;
 		Session session;
 		org.hibernate.SessionFactory sessions;
@@ -27,7 +27,7 @@ public class MainAppProcesoCargaCSV {
 					log.debug("¡ Cambio detectado !");
 					loadS.readCSV(session, con);
 				} catch(Exception e) {
-					e.printStackTrace();
+					con.addMensajesPend("Extepción detectada al intentar leer los archivos .csv del directorio");
 				}
 				log.debug("Monitorizando el directorio...");
 				watch.watchService(con);

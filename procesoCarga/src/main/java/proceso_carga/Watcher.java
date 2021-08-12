@@ -19,21 +19,42 @@ import java.nio.file.WatchService;
  */
 public class Watcher implements WatcherI {
 
-	File file =  null;
-	Path dir = null;
+	private File file =  null;
+	private Path dir = null;
 
-
+	private static Watcher watcher;
 
 	/**
 	 * Contructor de la clase
 	 * 
 	 * @param directory Directorio que se desea monitorizar
 	 */
-	public Watcher(String directory) {
+	private Watcher(String directory) {
 
 		file =  new File(directory);
 		dir = Paths.get(file.getAbsolutePath());
 
+	}
+
+
+	public static Watcher getSingletonInstance(String directory) {
+		if(watcher == null) {
+			watcher = new Watcher(directory);
+		} else {
+			System.out.println("No se puede crear el objeto, ya que ya existe una instancia del mismo  en esta clase");
+		}
+		return watcher;
+	}
+
+
+	@Override
+	public Watcher clone(){
+		try {
+			throw new CloneNotSupportedException();
+		} catch (CloneNotSupportedException ex) {
+			System.out.println("No se puede clonar un objeto de la clase Watcher");
+		}
+		return null; 
 	}
 
 
@@ -87,11 +108,10 @@ public class Watcher implements WatcherI {
 
 		} catch (IOException e) {
 
-			e.printStackTrace();
-
+			con.addMensajesPend("Extepción detectada durante la entrada y salida");
 		} catch (InterruptedException e) {
 
-			e.printStackTrace();
+			con.addMensajesPend("Thread Watcher Interrumpido");
 			Thread.currentThread().interrupt();
 
 		}

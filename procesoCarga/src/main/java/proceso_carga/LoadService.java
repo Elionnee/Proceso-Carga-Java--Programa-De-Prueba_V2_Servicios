@@ -47,7 +47,8 @@ public class LoadService implements LoadServiceI{
 	// Objeto properties que nos permite acceder a los contenidos del archivo pc.properties correspondiente
 	private Properties prop = null;
 
-
+	private static LoadService load;
+	
 
 
 
@@ -76,7 +77,7 @@ public class LoadService implements LoadServiceI{
 	 * csv hay en el directorio que este archivo especifica
 	 * 
 	 */
-	public LoadService(ConnectionDB con) {
+	private LoadService(ConnectionDB con) {
 
 		con.cleanMensajesPend();
 		// Genera la conexión con el archivo .properties indicado
@@ -88,10 +89,9 @@ public class LoadService implements LoadServiceI{
 
 		// Comprueba si el logger creado funciona correctamente
 		try {
-			logger.debug("Logger funciona");
+			con.addMensajesPend("Logger funcionando correctamente");
 		} catch(Exception e) {
-			logger.error("Error con el log", e);
-			e.printStackTrace();
+			con.addMensajesPend("Error con el log");
 		}
 
 		// Limpia la cola de archivos pendientes de leer
@@ -99,12 +99,31 @@ public class LoadService implements LoadServiceI{
 
 		// Setea el directorio indicado en el properties como directorio a observar
 		setFilePath(this.prop, con);
+	}
 
+	public static LoadService getSingletonInstance(ConnectionDB con) {
+		
+		if(load == null) {
+			load =  new LoadService(con);
+		} else {
+			System.out.println("No se puede crear el objeto, ya que ya existe una instancia del mismo  en esta clase");
+		}
+		
+		return load;
 	}
 
 
-
-
+	@Override
+	public LoadService clone(){
+	    try {
+	        throw new CloneNotSupportedException();
+	    } catch (CloneNotSupportedException ex) {
+	        System.out.println("No se puede clonar un objeto de la clase LoadService");
+	    }
+	    return null; 
+	}
+	
+	
 
 	/**
 	 * Por cada thread disponible, comenzar a ejecutar la funciópn run() :
@@ -344,7 +363,6 @@ public class LoadService implements LoadServiceI{
 			}
 
 		} catch(Exception ex) { 
-			ex.printStackTrace();
 			con.addMensajesPend("MoveFiles no encuentra el archivo");
 
 		}
@@ -411,7 +429,6 @@ public class LoadService implements LoadServiceI{
 		CSVReader csv = null;
 		String semana = file.getName();
 		String[] next = null;
-		ProductoEntity p = null;
 
 		try {
 
@@ -424,7 +441,8 @@ public class LoadService implements LoadServiceI{
 
 		}
 
-
+		ProductoEntity p = null;
+		
 		if(csv != null) {
 
 			semana = semana.replace(".csv", "");
