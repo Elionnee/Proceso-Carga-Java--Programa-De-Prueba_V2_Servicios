@@ -6,39 +6,59 @@ import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+
+/**
+ * Clase que permite la introducción de datos y la gestión de la base de datos que tenemos a nuestra disposición
+ * @author snc
+ *
+ */
 public class ConnectionDB implements ConnectionDBI {
 
 	private static ConnectionDB con = null;
-	
+
 	private ArrayList<String> mensajesPend = new ArrayList<>();
-	
+
+
+
+	/**
+	 * Contructor de la clase
+	 */
 	private ConnectionDB() {}
-	
+
+
+	/**
+	 * Método que permite crear una única instancia de la clase, para cumplir con el patrón Singleton
+	 * @return con Instancia de la clase 
+	 */
 	public static ConnectionDB getSingletonInstance() {
 		if (con == null) {
 			con = new ConnectionDB();
-		} else {
-			System.out.println("No se puede crear el objeto, ya que ya existe una instancia del mismo  en esta clase");
-
 		}
 		return con;
 	}
 
-	
+
+
+	/** 
+	 * Método que permite clonar un objeto pero que hemos sobreescrito para que no permita crear más objetos y así
+	 * cumplamos con el patrón Singleton
+	 */
 	@Override
 	public ConnectionDB clone(){
-	    try {
-	        throw new CloneNotSupportedException();
-	    } catch (CloneNotSupportedException ex) {
-	        System.out.println("No se puede clonar un objeto de la clase ConnectionDB");
-	    }
-	    return null; 
+		try {
+			throw new CloneNotSupportedException();
+		} catch (CloneNotSupportedException ex) {
+			System.out.println("No se puede clonar un objeto de la clase ConnectionDB");
+		}
+		return null; 
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Método que se encarga de introducir los datos a la base de datos
+	 * 
+	 * @param session Sesión establecida con la base de datos correspondientes
 	 * 
 	 * @param semana Nombre de la tabla a la que se deben añadir los datos
 	 * 
@@ -132,6 +152,11 @@ public class ConnectionDB implements ConnectionDBI {
 
 
 
+	/**
+	 * Método que crea una nueva tabla de logs en la base de datos
+	 * 
+	 * @param session Conexión abierta con la base de datos
+	 */
 	public synchronized void connectToDBCreateTableLogs(Session session) {
 
 		// Creamos un query del tipo create que nos permitirá crear una tabala con el nombre indicado
@@ -162,8 +187,15 @@ public class ConnectionDB implements ConnectionDBI {
 
 
 
-
-
+	/**
+	 * Método que se encarga de introducir los logs a la base de datos
+	 * 
+	 * @param session Sesión establecida con la base de datos correspondientes
+	 * 
+	 * @param semana Nombre de la tabla a la que se deben añadir los datos
+	 * 
+	 * @param prod Datos a añadir
+	 */
 	public synchronized void connectToDBIntroduceLogs(Session session, String semana, ProductoEntity prod, String info) {
 
 		// Creamos un query que nos permite insertar valores en la base de datos
@@ -197,15 +229,28 @@ public class ConnectionDB implements ConnectionDBI {
 	}
 
 
-
+	/**
+	 * Método que se encarga de devolver un array que contiene todos los mensajes pendientes
+	 * 
+	 * @return mensajesPend Lista de mensajes pendientes
+	 */
 	public ArrayList<String> getMensajesPend() {
 		return mensajesPend;
 	}
 
+
+	/**
+	 * Método que se encarga de vaciar el array de mensajes pendientes
+	 */
 	public void cleanMensajesPend() {
 		mensajesPend.clear();
 	}
 
+	/**
+	 * Método que se encarga de añadir un nuevo mensaje al array de pendientes
+	 * 
+	 * @param mes Mensaje que se desea añadir a la cola de pendientes
+	 */
 	public synchronized void addMensajesPend(String mes) {
 		mensajesPend.add(mes);
 	}

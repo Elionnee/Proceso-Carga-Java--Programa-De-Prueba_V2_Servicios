@@ -31,6 +31,12 @@ interface StringFunction {
 
 }
 
+
+/**
+ * Clase que se encarga de leer los contenidos del directorio, seleccionar los .csv y procesarlos 
+ * @author snc
+ *
+ */
 public class LoadService implements LoadServiceI{
 
 	// Directorio que se desea monitorizar
@@ -66,6 +72,11 @@ public class LoadService implements LoadServiceI{
 	};
 
 
+	/**
+	 * Método que devuelve un logger
+	 * 
+	 * @return logger
+	 */
 	public org.apache.logging.log4j.Logger getLogger() {
 		return logger;
 	}
@@ -76,6 +87,7 @@ public class LoadService implements LoadServiceI{
 	 * Constructor de la clase que se encarga de buscar el archivo .properties y de leer que archivos 
 	 * csv hay en el directorio que este archivo especifica
 	 * 
+	 * @param con Conexión con la base de datos para administrarla
 	 */
 	private LoadService(ConnectionDB con) {
 
@@ -105,14 +117,17 @@ public class LoadService implements LoadServiceI{
 		
 		if(load == null) {
 			load =  new LoadService(con);
-		} else {
-			System.out.println("No se puede crear el objeto, ya que ya existe una instancia del mismo  en esta clase");
 		}
 		
 		return load;
 	}
 
+	
 
+	/** 
+	 * Método que permite clonar un objeto pero que hemos sobreescrito para que no permita crear más objetos y así
+	 * cumplamos con el patrón Singleton
+	 */
 	@Override
 	public LoadService clone(){
 	    try {

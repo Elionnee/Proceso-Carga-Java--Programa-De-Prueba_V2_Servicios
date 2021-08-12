@@ -1,5 +1,10 @@
 package proceso_carga;
 
+/**
+ * Interfaz de la clase observador que monitoriza el directorio indicado e informa de cualquier cambio que pueda ocurrir
+ * @author snc
+ *
+ */
 public interface WatcherI {
 
 	/**

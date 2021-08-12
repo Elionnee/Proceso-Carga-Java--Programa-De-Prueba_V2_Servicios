@@ -13,7 +13,7 @@ import java.nio.file.WatchService;
 
 
 /**
- * Clase obserdor que monitoriza el directorio indicado e informa de cualquier cambio que pueda ocurrir
+ * Clase observador que monitoriza el directorio indicado e informa de cualquier cambio que pueda ocurrir
  * @author snc
  *
  */
@@ -22,7 +22,7 @@ public class Watcher implements WatcherI {
 	private File file =  null;
 	private Path dir = null;
 
-	private static Watcher watcher;
+	private static Watcher watch;
 
 	/**
 	 * Contructor de la clase
@@ -37,24 +37,44 @@ public class Watcher implements WatcherI {
 	}
 
 
+	/**
+	 * Método que permite crear una única instancia de la clase, para cumplir con el patrón Singleton
+	 * @param directory Directorio que se desea observar
+	 * @return watch Instancia de la clase 
+	 */
 	public static Watcher getSingletonInstance(String directory) {
-		if(watcher == null) {
-			watcher = new Watcher(directory);
-		} else {
-			System.out.println("No se puede crear el objeto, ya que ya existe una instancia del mismo  en esta clase");
-		}
-		return watcher;
+
+		if(watch == null) {
+
+			watch = new Watcher(directory);
+
+		} 
+
+		return watch;
+
 	}
 
 
+
+	/** 
+	 * Método que permite clonar un objeto pero que hemos sobreescrito para que no permita crear más objetos y así
+	 * cumplamos con el patrón Singleton
+	 */
 	@Override
 	public Watcher clone(){
+
 		try {
+
 			throw new CloneNotSupportedException();
+
 		} catch (CloneNotSupportedException ex) {
+
 			System.out.println("No se puede clonar un objeto de la clase Watcher");
+
 		}
+
 		return null; 
+
 	}
 
 
