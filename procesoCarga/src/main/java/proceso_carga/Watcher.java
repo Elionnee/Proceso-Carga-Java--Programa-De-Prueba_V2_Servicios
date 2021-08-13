@@ -21,7 +21,7 @@ public class Watcher implements WatcherI {
 
 	private File file =  null;
 	private Path dir = null;
-
+	private String posCatch;
 	private static Watcher watch;
 
 	/**
@@ -33,6 +33,7 @@ public class Watcher implements WatcherI {
 
 		file =  new File(directory);
 		dir = Paths.get(file.getAbsolutePath());
+		
 
 	}
 
@@ -73,8 +74,7 @@ public class Watcher implements WatcherI {
 
 		} catch (CloneNotSupportedException ex) {
 
-			System.out.println("No se puede clonar un objeto de la clase Watcher");
-
+			posCatch = "No se puede clonar un objeto de la clase Watcher";
 		}
 
 		return null; 
@@ -98,6 +98,10 @@ public class Watcher implements WatcherI {
 	 * @throws InterruptedException Se lanza cuando el método sufre una interrupción inesperada
 	 */
 	public void watchService(ConnectionDB con) throws InterruptedException {
+		
+		if(posCatch != null) {
+			con.addMensajesPend(posCatch);
+		}
 
 		try {
 

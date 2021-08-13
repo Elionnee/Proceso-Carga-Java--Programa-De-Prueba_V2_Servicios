@@ -54,7 +54,7 @@ public class LoadService implements LoadServiceI{
 	private Properties prop = null;
 
 	private static LoadService load;
-	
+	private String posCatch;
 
 
 
@@ -139,7 +139,7 @@ public class LoadService implements LoadServiceI{
 	    try {
 	        throw new CloneNotSupportedException();
 	    } catch (CloneNotSupportedException ex) {
-	        System.out.println("No se puede clonar un objeto de la clase LoadService");
+	       posCatch = "No se puede clonar un objeto de la clase LoadService";
 	    }
 	    return null; 
 	}
@@ -165,6 +165,10 @@ public class LoadService implements LoadServiceI{
 	 * 
 	 */
 	private Boolean threadReadCSVExecution(final Session session, ExecutorService threadPool, ConnectionDB con) {
+		
+		if(posCatch != null) {
+			con.addMensajesPend(posCatch);
+		}
 
 		threadPool.execute(new Runnable() {
 
@@ -577,6 +581,10 @@ public class LoadService implements LoadServiceI{
 				pendiente = threadReadCSVExecution(session, threadPool, con);
 
 			}
+		}
+
+		if(posCatch != null) {
+			con.addMensajesPend(posCatch);
 		}
 
 

@@ -4,8 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Clase que representa cada una de las entradas de una tabla de la base de datos.
@@ -17,7 +15,7 @@ public class ProductoEntity {
 
 	@Id
 	@Column(name = "Id")
-	@Getter @Setter private String id;
+	private String id;
 
 	@Column(name = "Nombre")
 	private String nombre; 
@@ -29,7 +27,7 @@ public class ProductoEntity {
 	private int cantidad;
 
 	@Column(name = "Id_Producto", columnDefinition ="text default ''")
-	@Getter @Setter private String transactionId;
+	private String transactionId;
 
 
 	/**
@@ -63,6 +61,25 @@ public class ProductoEntity {
 
 
 
+
+
+	public void setTransactionId(String idT) {
+		transactionId = idT;
+	}
+
+
+	public void setId(String id2) {		
+		id = id2;
+	}
+	
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+
+	public String getId() {		
+		return id;
+	}
 
 
 	/**

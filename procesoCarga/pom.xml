@@ -35,7 +35,6 @@
 					<resource>
 						<directory>src/main/resources/development</directory>
 						<filtering>true</filtering>
-						<!-- <excludes> <exclude>log*</exclude> </excludes> -->
 					</resource>
 				</resources>
 			</build>
@@ -66,7 +65,6 @@
 					<resource>
 						<directory>src/main/resources/production</directory>
 						<filtering>true</filtering>
-						<!-- <excludes> <exclude>log*</exclude> </excludes> -->
 					</resource>
 				</resources>
 			</build>
@@ -95,10 +93,38 @@
 				</filters>
 				<resources>
 					<resource>
-						<!-- <directory>resources/standard</directory> -->
 						<directory>src/main/resources</directory>
 						<filtering>true</filtering>
-						<!-- <excludes> <exclude>log*</exclude> </excludes> -->
+					</resource>
+				</resources>
+			</build>
+		</profile>
+
+		<profile>
+			<id>sonar</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<log.level>INFO</log.level>
+				<pc.url>jdbc:mysql://localhost:3306/profiles</pc.url>
+				<pc.user>sonar</pc.user>
+				<pc.password>1234</pc.password>
+				<profile.dir>src/main/resources/development</profile.dir>
+				<build.profile.id>development</build.profile.id>
+				<sonar.host.url>http://localhost:9000</sonar.host.url>
+				<sonar.jdbc.driver>com.mysql.jdbc.Driver</sonar.jdbc.driver>
+				<sonar.jdbc.username>admin</sonar.jdbc.username>
+				<sonar.jdbc.username>root</sonar.jdbc.username>
+			</properties>
+			<build>
+				<filters>
+					<filter>src/main/resources/development/pc.properties</filter>
+				</filters>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
 					</resource>
 				</resources>
 			</build>
@@ -289,15 +315,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>0.9.2</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-compiler-plugin</artifactId>
 			<version>3.8.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>sonar-maven-plugin</artifactId>
+			<version>3.4.0.905</version>
 		</dependency>
 
 	</dependencies>

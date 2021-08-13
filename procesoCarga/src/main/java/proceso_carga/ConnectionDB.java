@@ -51,7 +51,7 @@ public class ConnectionDB implements ConnectionDBI {
 		try {
 			throw new CloneNotSupportedException();
 		} catch (CloneNotSupportedException ex) {
-			System.out.println("No se puede clonar un objeto de la clase ConnectionDB");
+			addMensajesPend("No se puede clonar un objeto de la clase ConnectionDB");
 		}
 		return null; 
 	}
