@@ -28,6 +28,7 @@ public class ConnectionDB implements ConnectionDBI {
 
 	/**
 	 * Método que permite crear una única instancia de la clase, para cumplir con el patrón Singleton
+	 * 
 	 * @return con Instancia de la clase 
 	 */
 	public static ConnectionDB getSingletonInstance() {
@@ -42,6 +43,8 @@ public class ConnectionDB implements ConnectionDBI {
 	/** 
 	 * Método que permite clonar un objeto pero que hemos sobreescrito para que no permita crear más objetos y así
 	 * cumplamos con el patrón Singleton
+	 * 
+	 * @return null No permite que se clone el objeto
 	 */
 	@Override
 	public ConnectionDB clone(){
@@ -93,14 +96,6 @@ public class ConnectionDB implements ConnectionDBI {
 			session.getTransaction().rollback();
 		}
 	}
-
-
-
-
-
-
-
-
 
 
 
@@ -195,6 +190,8 @@ public class ConnectionDB implements ConnectionDBI {
 	 * @param semana Nombre de la tabla a la que se deben añadir los datos
 	 * 
 	 * @param prod Datos a añadir
+	 * 
+	 * @param info Información que se desea añadir en el log
 	 */
 	public synchronized void connectToDBIntroduceLogs(Session session, String semana, ProductoEntity prod, String info) {
 

@@ -39,7 +39,9 @@ public class Watcher implements WatcherI {
 
 	/**
 	 * Método que permite crear una única instancia de la clase, para cumplir con el patrón Singleton
+	 * 
 	 * @param directory Directorio que se desea observar
+	 * 
 	 * @return watch Instancia de la clase 
 	 */
 	public static Watcher getSingletonInstance(String directory) {
@@ -59,6 +61,8 @@ public class Watcher implements WatcherI {
 	/** 
 	 * Método que permite clonar un objeto pero que hemos sobreescrito para que no permita crear más objetos y así
 	 * cumplamos con el patrón Singleton
+	 * 
+	 * @return null No permite que se clone el objeto
 	 */
 	@Override
 	public Watcher clone(){
@@ -88,6 +92,8 @@ public class Watcher implements WatcherI {
 
 	/**
 	 * Método que se encarga de monitorizar e informar de cambios en el directorio
+	 * 
+	 * @param con Conexión con la base de datos para administrarla
 	 * 
 	 * @throws InterruptedException Se lanza cuando el método sufre una interrupción inesperada
 	 */

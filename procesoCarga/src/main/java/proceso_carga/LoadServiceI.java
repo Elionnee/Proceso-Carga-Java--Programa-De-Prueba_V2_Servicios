@@ -17,6 +17,8 @@ public interface LoadServiceI {
 	 * Método que lee los contenidos del archivo .properties
 	 * 
 	 * @param filePath Ruta en la que se encuentra el archivo pc.properties
+	 *
+	 * @param con Conexión con la base de datos para su correcta administración
 	 * 
 	 * @return prop Devuelve un objeto del tipo Properties que permite extraer los parametros del archivo .properties
 	 */
@@ -41,10 +43,16 @@ public interface LoadServiceI {
 	/**
 	 * Recoge todos los archivos nuevos que se encuentran actualmente en el directorio y los lee
 	 * 
+	 * @param con Conexión con la base de datos para su correcta administración
+	 * 
 	 * @throws InterruptedException Se lanza cuando un thread sufre una interrupción inesperada
 	 */
 	public void readCSV(Session session, ConnectionDB con);
 
-
+	/**
+	 * Método que devuelve un logger
+	 * 
+	 * @return logger
+	 */
 	public org.apache.logging.log4j.Logger getLogger();
 }

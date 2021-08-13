@@ -17,6 +17,8 @@ public interface WatcherI {
 	/**
 	 * Método que se encarga de monitorizar e informar de cambios en el directorio
 	 * 
+	 * @param con Conexión con la base de datos para administrarla
+	 * 
 	 * @throws InterruptedException Se lanza cuando el método sufre una interrupción inesperada
 	 */
 	public void watchService(ConnectionDB con) throws InterruptedException;

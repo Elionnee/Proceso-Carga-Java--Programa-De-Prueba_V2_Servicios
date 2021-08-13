@@ -41,7 +41,6 @@ public interface ConnectionDBI {
 	 * Método que crea una nueva tabla de logs en la base de datos
 	 * 
 	 * @param session Conexión abierta con la base de datos
-	 * @param session Conexión abierta con la base de datos
 	 */
 	public void connectToDBCreateTableLogs(Session session);
 
@@ -55,11 +54,12 @@ public interface ConnectionDBI {
 	 * @param semana Nombre de la tabla a la que se deben añadir los datos
 	 * 
 	 * @param prod Datos a añadir
+	 * 
+	 * @param info Información que se desea añadir en el log
 	 */
 	public void connectToDBIntroduceLogs(Session session, String semana, ProductoEntity prod, String info);
 
-
-
+	
 	/**
 	 * Método que se encarga de devolver un array que contiene todos los mensajes pendientes
 	 * 

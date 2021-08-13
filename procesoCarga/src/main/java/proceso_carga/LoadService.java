@@ -113,6 +113,12 @@ public class LoadService implements LoadServiceI{
 		setFilePath(this.prop, con);
 	}
 
+	
+
+	/**
+	 * Método que permite crear una única instancia de la clase, para cumplir con el patrón Singleton
+	 * @return con Instancia de la clase 
+	 */
 	public static LoadService getSingletonInstance(ConnectionDB con) {
 		
 		if(load == null) {
@@ -141,17 +147,21 @@ public class LoadService implements LoadServiceI{
 	
 
 	/**
-	 * Por cada thread disponible, comenzar a ejecutar la funciópn run() :
-	 * 		Adquirir un semaforo
+	 * Por cada thread disponible, comenzar a ejecutar la función run() :
 	 * 		Obtener archivo de la cola de pendientes
 	 * 		Avisar en caso de que haya una interrupción inesperada y detener el thread
-	 * 
 	 */
 
 	/**
 	 * Método que crea los threads y su función de ejecución para leer los archivos CSV
 	 * 
+	 * @param session Sesión establecida con la base de datos correspondientes
+	 * 
 	 * @param threadPool Conjunto de threads disponibles
+	 * 
+	 * @param con Conexión con la base de datos para su correcta administración
+	 * 
+	 * @return true si el thread ha terminado su ejecución correctamente o false si se ha visto interrumpido
 	 * 
 	 */
 	private Boolean threadReadCSVExecution(final Session session, ExecutorService threadPool, ConnectionDB con) {
@@ -197,13 +207,17 @@ public class LoadService implements LoadServiceI{
 	}
 
 
-
+	/**
+	 * Método que actualiza la variable threadState para indicar que se ha interrumpido el thread
+	 */
 	private synchronized void notifyThreadInt() {
 		threadState = false;
 	}
 
 
-
+	/**
+	 * Método que actualiza la variable threadState para indicar el correcto funcionamiento del thread
+	 */
 	private synchronized void setThreadState() {
 		threadState = true;
 	}
@@ -213,7 +227,7 @@ public class LoadService implements LoadServiceI{
 	/**
 	 * Método que extrae y devuelve el primer archivo de la cola de archivos pendientes por leer
 	 * 
-	 * @return filesOnQueue.poll() Primer archivo pendiente por leer
+	 * @return filesOnQueue.poll() Primer archivo pendiente por leer o null si no quedan archivos pendientes por leer
 	 */
 	private synchronized File getFileFromFileQueue() {
 		if(!filesOnQueue.isEmpty()) {
@@ -235,6 +249,8 @@ public class LoadService implements LoadServiceI{
 	 * Método que lee los contenidos del archivo .properties
 	 * 
 	 * @param filePath Ruta en la que se encuentra el archivo pc.properties
+	 *
+	 * @param con Conexión con la base de datos para su correcta administración
 	 * 
 	 * @return prop Devuelve un objeto del tipo Properties que permite extraer los parametros del archivo .properties
 	 */
@@ -283,6 +299,8 @@ public class LoadService implements LoadServiceI{
 	 * Método que busca la dirección del directorio a monitorizar del archivo .properties
 	 * 
 	 * @param prop Objeto que contiene los datos del archivo .properties
+	 * 
+	 * @param con Conexión con la base de datos para su correcta administración
 	 */
 	private void setFilePath(Properties prop, ConnectionDB con) {
 
@@ -311,6 +329,8 @@ public class LoadService implements LoadServiceI{
 	/**
 	 * Método que se encarga de obtener una lista que contenga todos los csv disponibles 
 	 * en el directorio indicado como parametro de entrada.
+	 * 	 
+	 * @param con Conexión con la base de datos para su correcta administración
 	 */
 	private void getFiles(ConnectionDB con) {
 
@@ -362,6 +382,8 @@ public class LoadService implements LoadServiceI{
 	 * @param cpFilePath Nombre del archivo una vez movido o del archivo a sustituir
 	 * 
 	 * @param destDir Directorio al que se va a mover
+	 * 
+	 * @param con Conexión con la base de datos para su correcta administración
 	 */
 	private void moveFile(String orFilePath, String cpFilePath, String destDir, ConnectionDB con) {
 
@@ -401,6 +423,8 @@ public class LoadService implements LoadServiceI{
 	 * 
 	 * @param cpFile Archivo que se desea sobreescribir
 	 * 
+	 * @param con Conexión con la base de datos para su correcta administración
+	 * 
 	 * @throws IOException Cuando no consigue reemplazar el archivo o cuando no existe
 	 */
 	private void replaceFile(File orFile, File cpFile, ConnectionDB con) throws IOException {
@@ -438,6 +462,8 @@ public class LoadService implements LoadServiceI{
 	 * almacena los contenidos del mismo en varios hashmap cuyas key son los id de los productos
 	 * 
 	 * @param file Archivo que se desea leer
+	 * 
+	 * @param con Conexión con la base de datos para su correcta administración
 	 */
 	private void readFile(Session session, File file, ConnectionDB con) {
 
@@ -517,6 +543,8 @@ public class LoadService implements LoadServiceI{
 
 	/**
 	 * Recoge todos los archivos nuevos que se encuentran actualmente en el directorio y los lee
+	 * 
+	 * @param con Conexión con la base de datos para su correcta administración
 	 * 
 	 * @throws InterruptedException Se lanza cuando un thread sufre una interrupción inesperada
 	 */
