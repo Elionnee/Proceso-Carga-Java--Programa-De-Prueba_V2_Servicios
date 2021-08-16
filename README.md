@@ -1,4 +1,4 @@
-# Proceso-Carga-Java--Programa-De-Prueba_V2_Servicios
+# Proceso de Carga Simple  -  V2_Servicios  -  Java
 
 Código sencillo de monitorización de un directorio y procesamiento de datos procedentes de archivos .csv para su posterior almacenamiento en una base de datos.
 
