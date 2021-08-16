@@ -32,10 +32,14 @@ public class ConnectionDB implements ConnectionDBI {
 	 * @return con Instancia de la clase 
 	 */
 	public static ConnectionDB getSingletonInstance() {
+		
 		if (con == null) {
+			
 			con = new ConnectionDB();
 		}
+		
 		return con;
+		
 	}
 
 
@@ -47,13 +51,20 @@ public class ConnectionDB implements ConnectionDBI {
 	 * @return null No permite que se clone el objeto
 	 */
 	@Override
-	public ConnectionDB clone(){
+	public ConnectionDB clone() {
+		
 		try {
+			
 			throw new CloneNotSupportedException();
+			
 		} catch (CloneNotSupportedException ex) {
+			
 			addMensajesPend("No se puede clonar un objeto de la clase ConnectionDB");
+		
 		}
+		
 		return null; 
+		
 	}
 
 
@@ -90,11 +101,16 @@ public class ConnectionDB implements ConnectionDBI {
 
 		// Intenta actualizar la base de datos ejecutando la query
 		try {
+			
 			query2.executeUpdate();
 			session.getTransaction().commit();
+			
 		} catch(Exception e) {
+			
 			session.getTransaction().rollback();
+		
 		}
+	
 	}
 
 
@@ -209,20 +225,31 @@ public class ConnectionDB implements ConnectionDBI {
 
 		// Rellenamos los parámetros necesarios para realizar el query de tipo insert
 		query2.setParameter(1, UUID.randomUUID().toString());
+		
 		if(prod != null) {
+			
 			query2.setParameter(2, prod.getId() + "_" + semana);
+		
 		} else {
+			
 			query2.setParameter(2, "INFO_GENERAL_" + semana);
+		
 		}
+		
 		query2.setParameter(3, info);
 
 		// Intenta actualizar la base de datos ejecutando la query
 		try {
+			
 			query2.executeUpdate();
 			session.getTransaction().commit();
+			
 		} catch(Exception e) {
+			
 			session.getTransaction().rollback();
+			
 		}
+		
 	}
 
 
@@ -249,7 +276,9 @@ public class ConnectionDB implements ConnectionDBI {
 	 * @param mes Mensaje que se desea añadir a la cola de pendientes
 	 */
 	public synchronized void addMensajesPend(String mes) {
+		
 		mensajesPend.add(mes);
+		
 	}
 
 }

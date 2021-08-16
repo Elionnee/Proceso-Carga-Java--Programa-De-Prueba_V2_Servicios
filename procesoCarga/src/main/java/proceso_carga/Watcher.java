@@ -66,7 +66,7 @@ public class Watcher implements WatcherI {
 	 * @return null No permite que se clone el objeto
 	 */
 	@Override
-	public Watcher clone(){
+	public Watcher clone() {
 
 		try {
 
@@ -100,7 +100,9 @@ public class Watcher implements WatcherI {
 	public void watchService(ConnectionDB con) throws InterruptedException {
 		
 		if(posCatch != null) {
+			
 			con.addMensajesPend(posCatch);
+		
 		}
 
 		try {
@@ -122,6 +124,7 @@ public class Watcher implements WatcherI {
 					con.addMensajesPend("Se ha creado un nuevo archivo o directorio: " + event.context().toString());
 
 				}
+				
 				if (event.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
 
 					con.addMensajesPend("Se ha borrado un archivo o directorio: " + event.context().toString());
@@ -139,6 +142,7 @@ public class Watcher implements WatcherI {
 		} catch (IOException e) {
 
 			con.addMensajesPend("Extepción detectada durante la entrada y salida");
+			
 		} catch (InterruptedException e) {
 
 			con.addMensajesPend("Thread Watcher Interrumpido");

@@ -64,21 +64,29 @@ public class ProductoEntity {
 
 
 	public void setTransactionId(String idT) {
+		
 		transactionId = idT;
+		
 	}
 
 
-	public void setId(String id2) {		
+	public void setId(String id2) {	
+		
 		id = id2;
+		
 	}
 	
 	public String getTransactionId() {
+		
 		return transactionId;
+		
 	}
 
 
 	public String getId() {		
+		
 		return id;
+		
 	}
 
 

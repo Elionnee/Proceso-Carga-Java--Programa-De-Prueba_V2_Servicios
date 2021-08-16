@@ -60,6 +60,7 @@ public class LoadService implements LoadServiceI{
 
 	// Lambda que permite dar un formato específico a la string que se le pasa como parámetro de entrada
 	StringFunction deleteSymbols = new StringFunction() {
+		
 		@Override
 		public String run(String n) {
 
@@ -69,6 +70,7 @@ public class LoadService implements LoadServiceI{
 			return result;
 
 		}
+		
 	};
 
 
@@ -78,7 +80,9 @@ public class LoadService implements LoadServiceI{
 	 * @return logger
 	 */
 	public org.apache.logging.log4j.Logger getLogger() {
+		
 		return logger;
+		
 	}
 
 
@@ -101,9 +105,13 @@ public class LoadService implements LoadServiceI{
 
 		// Comprueba si el logger creado funciona correctamente
 		try {
+			
 			con.addMensajesPend("Logger funcionando correctamente");
+			
 		} catch(Exception e) {
+			
 			con.addMensajesPend("Error con el log");
+		
 		}
 
 		// Limpia la cola de archivos pendientes de leer
@@ -111,6 +119,7 @@ public class LoadService implements LoadServiceI{
 
 		// Setea el directorio indicado en el properties como directorio a observar
 		setFilePath(this.prop, con);
+		
 	}
 
 	
@@ -122,10 +131,13 @@ public class LoadService implements LoadServiceI{
 	public static LoadService getSingletonInstance(ConnectionDB con) {
 		
 		if(load == null) {
+			
 			load =  new LoadService(con);
+			
 		}
 		
 		return load;
+		
 	}
 
 	
@@ -136,12 +148,19 @@ public class LoadService implements LoadServiceI{
 	 */
 	@Override
 	public LoadService clone(){
+		
 	    try {
+	    	
 	        throw new CloneNotSupportedException();
+	        
 	    } catch (CloneNotSupportedException ex) {
+	    	
 	       posCatch = "No se puede clonar un objeto de la clase LoadService";
+	       
 	    }
+	    
 	    return null; 
+	    
 	}
 	
 	
@@ -167,7 +186,9 @@ public class LoadService implements LoadServiceI{
 	private Boolean threadReadCSVExecution(final Session session, ExecutorService threadPool, ConnectionDB con) {
 		
 		if(posCatch != null) {
+			
 			con.addMensajesPend(posCatch);
+			
 		}
 
 		threadPool.execute(new Runnable() {
@@ -175,9 +196,13 @@ public class LoadService implements LoadServiceI{
 			public void run() {
 
 				try {
+					
 					threadGetFileFromQueue();
+					
 				} catch (Exception e) {
+					
 					notifyThreadInt();
+					
 				}
 
 			}
@@ -192,9 +217,12 @@ public class LoadService implements LoadServiceI{
 
 					readFile(session, file, con);
 					setThreadState();
+					
 				} else {
+					
 					notifyThreadInt();
 					Thread.currentThread().interrupt();
+					
 				}
 
 			}
@@ -202,10 +230,14 @@ public class LoadService implements LoadServiceI{
 		});
 
 		if(Boolean.FALSE.equals(threadState)) {
+			
 			setThreadState();
 			return false;
+			
 		} else {
+			
 			return true;
+			
 		}
 
 	}
@@ -215,7 +247,9 @@ public class LoadService implements LoadServiceI{
 	 * Método que actualiza la variable threadState para indicar que se ha interrumpido el thread
 	 */
 	private synchronized void notifyThreadInt() {
+		
 		threadState = false;
+		
 	}
 
 
@@ -223,7 +257,9 @@ public class LoadService implements LoadServiceI{
 	 * Método que actualiza la variable threadState para indicar el correcto funcionamiento del thread
 	 */
 	private synchronized void setThreadState() {
+		
 		threadState = true;
+		
 	}
 
 
@@ -234,9 +270,13 @@ public class LoadService implements LoadServiceI{
 	 * @return filesOnQueue.poll() Primer archivo pendiente por leer o null si no quedan archivos pendientes por leer
 	 */
 	private synchronized File getFileFromFileQueue() {
+		
 		if(!filesOnQueue.isEmpty()) {
+			
 			return filesOnQueue.poll();
+			
 		}
+		
 		return null;
 	}
 
@@ -404,6 +444,7 @@ public class LoadService implements LoadServiceI{
 			}
 
 		} catch(Exception ex) { 
+			
 			con.addMensajesPend("MoveFiles no encuentra el archivo");
 
 		}
@@ -530,7 +571,9 @@ public class LoadService implements LoadServiceI{
 				moveFile(file.getAbsolutePath(), prop.getProperty("ko") + "\\" + file.getName(), prop.getProperty("ko"), con);
 
 			}
+			
 		}
+		
 	}
 
 
@@ -562,9 +605,13 @@ public class LoadService implements LoadServiceI{
 
 		tempPend = con.getMensajesPend();
 		con.cleanMensajesPend();
+		
 		for (String m : tempPend) {
+			
 			con.connectToDBIntroduceLogs(session, "Inicio", null,  m);
+			
 		}
+		
 		tempPend.clear();
 
 		con.connectToDBIntroduceLogs(session, "Inicio", null, "Comienzo de transferencia de archivos .CSV a la base de datos.");
@@ -584,15 +631,21 @@ public class LoadService implements LoadServiceI{
 		}
 
 		if(posCatch != null) {
+			
 			con.addMensajesPend(posCatch);
+			
 		}
 
 
 		tempPend = con.getMensajesPend();
 		con.cleanMensajesPend();
+		
 		for (String m : tempPend) {
+			
 			con.connectToDBIntroduceLogs(session, "Fin", null,  m);
+			
 		}
+		
 		tempPend.clear();
 
 	}
